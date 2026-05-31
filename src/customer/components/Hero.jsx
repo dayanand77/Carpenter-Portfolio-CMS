@@ -1,5 +1,4 @@
 import React from 'react';
-import SkeletonImage from '../../shared/components/SkeletonImage';
 import { useSettings } from '../../shared/contexts/SettingsContext';
 
 export default function Hero() {
@@ -24,7 +23,7 @@ export default function Hero() {
 
       {/* Hero Background */}
       {settings.heroBannerUrl ? (
-        <SkeletonImage src={settings.heroBannerUrl} alt="" className="w-full h-full object-cover" wrapperClassName="absolute inset-0 z-0" />
+        <img src={settings.heroBannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
       ) : null}
 
       {/* Ambient Dark Overlay */}

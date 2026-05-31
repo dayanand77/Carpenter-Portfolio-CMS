@@ -1,5 +1,4 @@
 import { useParams, Link } from 'react-router-dom';
-import SkeletonImage from '../../shared/components/SkeletonImage';
 import { useState } from 'react';
 import { useSettings } from '../../shared/contexts/SettingsContext';
 import { useCategories } from '../../shared/contexts/CategoriesContext';
@@ -89,7 +88,7 @@ export default function GalleryPage({ onImageClick }) {
                 onClick={() => handleImageClick(allImages, idx, subcategory.name)}
               >
                 <div className="aspect-square">
-                  <SkeletonImage 
+                  <img 
                     src={img} 
                     alt={`${subcategory.name} design ${idx + 1}`} 
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-104"
