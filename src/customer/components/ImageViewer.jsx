@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import SkeletonImage from '../../shared/components/SkeletonImage';
 
 export default function ImageViewer({ images, activeIndex, subtitle, onClose, onNext, onPrev }) {
   const [activeIdx, setActiveIdx] = useState(activeIndex);
@@ -107,7 +108,7 @@ export default function ImageViewer({ images, activeIndex, subtitle, onClose, on
                     activeIdx === idx ? 'border-amber-600 scale-105 shadow-md shadow-amber-600/20' : 'border-white/10 hover:border-white/30'
                   }`}
                 >
-                  <img src={imgUrl} alt="" className="w-full h-full object-cover" />
+                  <SkeletonImage src={imgUrl} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

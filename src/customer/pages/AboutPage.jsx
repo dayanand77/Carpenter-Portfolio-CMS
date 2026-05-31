@@ -1,4 +1,5 @@
 import { useSettings } from '../../shared/contexts/SettingsContext';
+import SkeletonImage from '../../shared/components/SkeletonImage';
 
 export default function AboutPage() {
   const { settings } = useSettings();
@@ -44,7 +45,7 @@ export default function AboutPage() {
           
           {/* Image Showcase */}
           <div className="h-[300px] md:h-[450px] rounded-lg overflow-hidden border border-stone-200/80 shadow-md">
-            <img 
+            <SkeletonImage 
               src="/assets/images/hero_bg.png" 
               alt="Joinery Studio Showroom" 
               className="w-full h-full object-cover object-center"
