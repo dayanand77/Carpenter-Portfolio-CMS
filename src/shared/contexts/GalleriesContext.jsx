@@ -5,18 +5,37 @@ import { useSubcategories } from './SubcategoriesContext';
 
 const GalleriesContext = createContext(null);
 
+const CACHE_KEY = 'site_galleries_cache';
+
+const getCachedGalleries = () => {
+  try {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) return JSON.parse(cached);
+    }
+  } catch (e) {
+    console.warn("Failed to parse galleries cache", e);
+  }
+  return null;
+};
+
 export function GalleriesProvider({ children }) {
   const { subcategories, loading: subsLoading } = useSubcategories();
-  const [galleries, setGalleries] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [galleries, setGalleries] = useState(() => getCachedGalleries() || {});
+  const [loading, setLoading] = useState(() => !getCachedGalleries());
   const [error, setError] = useState(null);
 
   const refreshGalleries = useCallback(async () => {
-    setLoading(true);
+    if (!getCachedGalleries()) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const data = await getFirestoreGalleries();
       setGalleries(data);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      }
     } catch (err) {
       console.error("GalleriesContext: failed to load galleries", err);
       setError(err.message);

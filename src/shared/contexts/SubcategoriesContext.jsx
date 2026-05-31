@@ -4,17 +4,36 @@ import { seedDefaultSubcategoryImages } from '../data/mockData';
 
 const SubcategoriesContext = createContext(null);
 
+const CACHE_KEY = 'site_subcategories_cache';
+
+const getCachedSubcategories = () => {
+  try {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) return JSON.parse(cached);
+    }
+  } catch (e) {
+    console.warn("Failed to parse subcategories cache", e);
+  }
+  return null;
+};
+
 export function SubcategoriesProvider({ children }) {
-  const [subcategories, setSubcategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [subcategories, setSubcategories] = useState(() => getCachedSubcategories() || []);
+  const [loading, setLoading] = useState(() => !getCachedSubcategories());
   const [error, setError] = useState(null);
 
   const refreshSubcategories = useCallback(async () => {
-    setLoading(true);
+    if (!getCachedSubcategories()) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const data = await getFirestoreSubcategories();
       setSubcategories(data);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      }
       seedDefaultSubcategoryImages();
     } catch (err) {
       console.error("SubcategoriesContext: failed to load subcategories", err);

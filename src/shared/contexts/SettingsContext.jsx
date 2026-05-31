@@ -34,20 +34,44 @@ const fallbackSettings = {
 
 const SettingsContext = createContext(null);
 
+const CACHE_KEY = 'site_settings_cache';
+
+const getCachedSettings = () => {
+  try {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) return JSON.parse(cached);
+    }
+  } catch (e) {
+    console.warn("Failed to parse settings cache", e);
+  }
+  return null;
+};
+
 export function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState({ ...fallbackSettings });
-  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState(() => getCachedSettings() || { ...fallbackSettings });
+  const [loading, setLoading] = useState(() => !getCachedSettings());
   const [error, setError] = useState(null);
 
   const loadSettings = async () => {
     try {
-      setLoading(true);
+      // Only set loading to true if we don't have cached data
+      if (!getCachedSettings()) {
+        setLoading(true);
+      }
       setError(null);
       const data = await getFirestoreSettings();
       setSettings(data);
+      
+      // Update cache
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      }
     } catch (err) {
       setError(err.message);
-      setSettings({ ...fallbackSettings });
+      if (!getCachedSettings()) {
+        setSettings({ ...fallbackSettings });
+      }
     } finally {
       setLoading(false);
     }

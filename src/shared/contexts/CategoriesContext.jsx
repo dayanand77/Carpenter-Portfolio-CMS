@@ -3,6 +3,20 @@ import { getFirestoreCategories } from '../services/firebase';
 
 const CategoriesContext = createContext(null);
 
+const CACHE_KEY = 'site_categories_cache';
+
+const getCachedCategories = () => {
+  try {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) return JSON.parse(cached);
+    }
+  } catch (e) {
+    console.warn("Failed to parse categories cache", e);
+  }
+  return null;
+};
+
 const fallbackCategories = [
   { id: "doors", name: "Doors", coverImage: "/assets/images/door_single.png", description: "", displayOrder: 0, visible: true },
   { id: "windows", name: "Windows", coverImage: "/assets/images/door_single.png", description: "", displayOrder: 1, visible: true },
@@ -13,16 +27,21 @@ const fallbackCategories = [
 ];
 
 export function CategoriesProvider({ children }) {
-  const [categories, setCategories] = useState(fallbackCategories);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState(() => getCachedCategories() || fallbackCategories);
+  const [loading, setLoading] = useState(() => !getCachedCategories());
   const [error, setError] = useState(null);
 
   const refreshCategories = useCallback(async () => {
-    setLoading(true);
+    if (!getCachedCategories()) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const data = await getFirestoreCategories();
       setCategories(data);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      }
     } catch (err) {
       console.error("CategoriesContext: failed to load categories", err);
       setError(err.message);
