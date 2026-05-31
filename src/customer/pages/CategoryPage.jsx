@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import SkeletonImage from '../../shared/components/SkeletonImage';
 import { useCategories } from '../../shared/contexts/CategoriesContext';
 import { useSubcategories } from '../../shared/contexts/SubcategoriesContext';
 import { useGalleries } from '../../shared/contexts/GalleriesContext';
@@ -87,7 +88,7 @@ export default function CategoryPage({ onImageClick }) {
                         onClick={() => onImageClick && onImageClick(getGalleryImages(sub.slug), idx, sub.name)}
                         className="relative aspect-square overflow-hidden rounded-lg bg-stone-100 border border-stone-200/70 cursor-pointer group transition-all duration-350 hover:shadow-md hover:border-stone-300 hover:-translate-y-0.5"
                       >
-                        <img
+                        <SkeletonImage
                           src={imgUrl}
                           alt={sub.name}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108"
